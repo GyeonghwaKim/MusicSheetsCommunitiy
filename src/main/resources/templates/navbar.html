@@ -1,0 +1,74 @@
+<nav class="navbar bg-body-tertiary sticky-top" th:fragment="navbarFragment">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/}" th:text="#{projectTitle}">Project Title</a>
+        <div class="d-flex">
+            <div sec:authorize="isAnonymous()">
+                <a id="login" th:href="@{/login}" class="btn">
+                    <span>Login</span>
+                </a>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <a id="logout" th:href="@{/logout}" class="btn">
+                    <span>Logout</span>
+                </a>
+            </div>
+            <div>
+                <a id="menu" class="btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                    aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                    <span>Menu</span>
+                </a>
+            </div>
+        </div>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel" th:text="#{projectTitle}">Project Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/profile}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/saveMusicSheets}">Save Sheets</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            SheetLists
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li th:each="musicSheet:${musicSheetList}">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <a class="dropdown-item" th:href="@{/musicSheets(id=${musicSheet.id})}"
+                                        th:text="${musicSheet.title}">Song's Title</a>
+                                    <input class="btn text-primary" type="button" id="nav-modifyBtn"
+                                        th:value="#{nav.modifyBtn}">
+                                    <form th:action="@{|/musicSheets/delete/${musicSheet.id}}|" method="post">
+                                        <input class="btn text-primary" type="submit" th:value="#{nav.deleteBtn}">
+                                    </form>
+                                </div>
+                                <div id="nav-modifyDiv" style="display:none;">
+                                    <form class="input-group" th:action="@{|/musicSheets/modify/${musicSheet.id}}|"
+                                        th:object="${modifyTitle}" method="post">
+                                        <input class="form-control form-control-sm rounded ms-2" type="text"
+                                            th:field="*{title}" required>
+                                        <input class="btn text-primary" type="submit" th:value="#{nav.modifyCheck}">
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/post/list?page=0}">Community</a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</nav>

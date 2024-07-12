@@ -1,0 +1,29 @@
+<html lang="en" layout:decorate="~{layout}">
+
+<body>
+  <div layout:fragment="content">
+
+    <form class="form-save position-absolute top-50 start-50 translate-middle text-center border"
+      th:action="@{/saveMusicSheets}" th:object="${musicSheetForm}" method="post">
+      <h1>Save your Music Sheets!</h1>
+      <div th:replace="~{error :: errorsFragment}"></div>
+      <p></p>
+      <div class="mb-3 row">
+        <label for="title" class="col-sm-2 col-form-label">Title</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control form-control-lg" th:field="*{title}">
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="url" class="col-sm-2 col-form-label">Url</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control form-control-lg" th:field="*{url}">
+        </div>
+      </div>
+
+      <button type="submit" class="w-25 btn  btn-outline-primary">Save</button>
+    </form>
+  </div>
+</body>
+
+</html>

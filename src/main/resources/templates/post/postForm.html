@@ -1,0 +1,152 @@
+<html lang="en" layout:decorate="~{layout}">
+
+<body>
+    <div layout:fragment="content">
+
+        <div class="container my-5">
+
+
+            <h2>Write Post</h2>
+            <hr>
+            <form th:object="${postForm}" th:action="@{${action}}" method="post" enctype="multipart/form-data">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div th:replace="~{error :: errorsFragment}"></div>
+                <div class="mb-3">
+                    <label for="titleInput" class="form-label">Title</label>
+                    <input type="text" class="form-control" th:field="*{title}">
+                </div>
+                <div class="mb-3">
+                    <label for="detailInput" class="form-label">Content</label>
+                    <textarea class="form-control" rows="3" th:field="*{content}"></textarea>
+                </div>
+
+
+                <div class="input-group">
+                    <input type="file" class="form-control" accept="image/*" onchange="uploadFiles(this.files)"
+                        th:field="*{multipartFileList}" multiple>
+                </div>
+                <div id="fileList"></div>
+                <div id="addFileList"></div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-outline-dark">Create Post</button>
+                </div>
+
+
+            </form>
+        </div>
+        <script th:inline="javascript">
+
+            $(document).ready(function () {
+                var path = window.location.pathname;
+                var pathParts = path.split('/');
+                if (pathParts.length === 4 && pathParts[1] === 'post' && pathParts[2] === 'modify') {
+                    var postId = pathParts[3];
+                    $.ajax({
+                        type: "GET",
+                        url: `/post/files/${postId}`,
+                        success: function (response) {
+                            loadFiles(response);
+                        },
+                        error: function () {
+                            alert("삭제됐거나 존재하지 않는 post 입니다");
+                            window.location.href = "/";
+                        }
+                    });
+                }
+            });
+
+            let selectedFiles = [];
+            const maxSize = 3 * 1024 * 1024;
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+            function uploadFiles(files) {
+
+                const addFileList = document.getElementById('addFileList');
+
+                while (addFileList.firstChild) {
+                    addFileList.removeChild(addFileList.firstChild);
+                }
+
+                selectedFiles = [];
+
+                for (let i = 0; i < files.length; i++) {
+
+                    if (files[i]) {
+                        if (!allowedTypes.includes(files[i].type)) {
+                            alert("이미지 파일만 업로드 가능합니다. (jpg, png, gif)");
+                            document.getElementById('multipartFileList').value = '';
+                            return;
+                        }
+                        if (files[i].size > maxSize) {
+                            alert("파일 크기가 3MB를 초과합니다. 다른 파일을 선택해주세요.");
+                            document.getElementById('multipartFileList').value = '';
+                            return;
+                        }
+                    }
+
+                    selectedFiles.push(files[i]);
+                    const item = document.createElement('div');
+                    const fileName = document.createTextNode(files[i].name);
+                    const deleteButton = document.createElement('button');
+
+                    deleteButton.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        deleteFile(files[i], item);
+                    });
+
+                    deleteButton.innerText = "X";
+                    item.appendChild(fileName);
+                    item.appendChild(deleteButton);
+                    addFileList.appendChild(item);
+                }
+            }
+
+            function deleteFile(fileToDelete, item) {
+
+                selectedFiles = selectedFiles.filter(file => file !== fileToDelete);
+                item.remove();
+
+                const inputFile = document.querySelector('input[type="file"]');
+                const dataTransfer = new DataTransfer();
+
+                selectedFiles.forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+
+                inputFile.files = dataTransfer.files;
+            }
+
+
+
+
+            function loadFiles(files) {
+                const fileList = document.getElementById('fileList');
+                for (let i = 0; i < files.length; i++) {
+                    const item = document.createElement('div');
+                    const fileName = document.createTextNode(files[i].originalFileName);
+                    const deleteButton = document.createElement('button');
+
+                    deleteButton.addEventListener('click', (event) => {
+                        item.remove();
+                        event.preventDefault();
+                        const deleteItem = document.createElement('input');
+                        deleteItem.setAttribute("name", "deleteFileId");
+                        deleteItem.setAttribute("value", files[i].id);
+                        deleteItem.setAttribute("type", "hidden");
+                        fileList.appendChild(deleteItem);
+                    });
+
+                    deleteButton.innerText = "X";
+                    item.appendChild(fileName);
+                    item.appendChild(deleteButton);
+                    fileList.appendChild(item);
+                }
+            }
+
+
+        </script>
+    </div>
+</body>
+
+</html>

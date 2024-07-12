@@ -1,0 +1,83 @@
+<html lang="en" layout:decorate="~{layout}">
+
+<body>
+    <div layout:fragment="content">
+        <div class="container my-5">
+
+
+
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <form action="/post/search" method="get">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="keyword">
+                            <button class="btn btn-outline-dark" type="submit">Button</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <table class="table table-hover">
+                <thead>
+                    <tr class="text-primary">
+                        <th scope="col">Num</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Author</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="post,loop:${paging}">
+                        <th th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"
+                            scope="row">1</th>
+                        <td>
+                            <a th:href="@{|/post/detail/${post.id}|}" th:text="${post.title}">Title</a>
+                            <span class="text-danger small ms-2" th:if="${#lists.size(post.commentList) > 0}"
+                                th:text="${#lists.size(post.commentList)}">
+                            </span>
+                        </td>
+                        <td th:text="${post.author.username}">Author</td>
+                        <td th:text="${#temporals.format(post.createAt, 'yyyy-MM-dd HH:mm')}">date</td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div th:if="${!paging.isEmpty()}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                                <a class="page-link" th:href="@{|?page=${paging.number-1}|}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+                                th:if="${page >= paging.number-2 and page <= paging.number+2}"
+                                th:classappend="${page == paging.number} ? 'active'">
+                                <a class="page-link" th:text="${page}" th:href="@{|?page=${page}|}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                                <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <a th:href="@{/post/create}" class="btn btn-primary">Create</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

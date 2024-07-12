@@ -1,0 +1,94 @@
+<html lang="en" layout:decorate="~{layout}">
+
+<body>
+
+  <div layout:fragment="content" class="container">
+
+    <div class="container my-5">
+      <div class="row text-center mb-2">
+        <div class="col">
+          <h2 th:text="${title}">Title</h2>
+        </div>
+      </div>
+
+
+      <div class="row justify-content-center align-items-center">
+        <div class="col d-flex justify-content-center">
+          <div id="player">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    <script th:inline="javascript">
+
+      function getYouTubeVideoId(url) {
+
+        var videoId = '';
+
+        var urlParams = new URLSearchParams(new URL(url).search);
+
+
+        if (urlParams.has('v')) {
+          videoId = urlParams.get('v');
+        }
+        else {
+
+          var regExp = /youtu\.be\/([^\/\?]+)/;
+          var match = url.match(regExp);
+          if (match && match[1]) {
+            videoId = match[1];
+          }
+        }
+
+        return videoId;
+      }
+
+      var youtubeUrl = [[${ url }]];
+      var videoId = getYouTubeVideoId(youtubeUrl);
+
+
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+          height: '480',
+          width: '854',
+          videoId: videoId,
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      }
+
+
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>
+  </div>
+</body>
+
+</html>

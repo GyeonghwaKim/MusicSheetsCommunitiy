@@ -1,0 +1,45 @@
+.navbar {
+  font-size: 1.25rem;
+  /* 기본 글꼴 크기보다 25% 더 크게 */
+  padding: 1rem 1.5rem;
+  /* 내비게이션 바의 패딩을 더 크게 */
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  /* 브랜드 텍스트 크기를 더 크게 */
+}
+
+.navbar-nav .nav-link {
+  padding: 0.75rem 1rem;
+  /* 내비게이션 링크의 패딩을 더 크게 */
+}
+
+
+.form-signin {
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-save {
+  width: 100%;
+  max-width: 1000px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-signup {
+  width: 100%;
+  max-width: 1000px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-profile {
+  width: 100%;
+  max-width: 1000px;
+  padding: 15px;
+  margin: auto;
+}

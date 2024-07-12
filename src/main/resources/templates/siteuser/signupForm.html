@@ -1,0 +1,30 @@
+<html lang="en" layout:decorate="~{layout}">
+
+<body>
+  <div layout:fragment="content">
+    <form class="form-signup position-absolute top-50 start-50 translate-middle text-center border"
+      th:action="@{/signup}" th:object="${signupForm}" method="post">
+      <h1>Sign up!</h1>
+      <div th:replace="~{error :: errorsFragment}"></div>
+      <div class="input-group input-group-lg mb-3">
+        <label for="username" class="col-sm-2 col-form-label">Username</label>
+        <input type="text" class="form-control" th:field="*{username}">
+      </div>
+      <div class="input-group input-group-lg mb-3">
+        <label for="password" class="col-sm-2 col-form-label">Password</label>
+        <input type="password" class="form-control" th:field="*{password}">
+      </div>
+      <div class="input-group input-group-lg mb-3">
+        <label for="confirmPassword" class="col-sm-2 col-form-label">Confirm Password</label>
+        <input type="password" class="form-control" th:field="*{confirmPassword}">
+      </div>
+      <div class="input-group input-group-lg mb-3">
+        <label for="email" class="col-sm-2 col-form-label">Email</label>
+        <input type="text" class="form-control" th:field="*{email}">
+      </div>
+      <button type="submit" class="w-25 btn  btn-outline-primary">Check</button>
+    </form>
+  </div>
+</body>
+
+</html>

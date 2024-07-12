@@ -1,0 +1,189 @@
+<html lang="en" layout:decorate="~{admin/layout}">
+
+<body>
+    <div layout:fragment="content">
+        <div class="content">
+            <h2>Comment</h2>
+
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <form action="/admin/comment/search" method="get">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" name="keyword" placeholder="Username,Content">
+                            <button class="btn btn-outline-dark" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <form id="commentTable">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Num</th>
+                            <th scope="col">Content</th>
+                            <th scope="col">Post Title</th>
+                            <th scope="col">Author</th>
+                            <th scope="col">Create At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="comment, loop:${paging}">
+                            <th><input type="checkbox" name="checkedComment" th:value="${comment.id}" /></th>
+                            <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"
+                                scope="row">1</td>
+                            <td th:text="${comment.content}">진짜 멋지더라</td>
+                            <td><a th:href="@{|/post/detail/${comment.postId}|}" th:text="${comment.postTitle}">이거 본
+                                    사람?</a></td>
+                            <td><a href="" th:text="${comment.author.username}"
+                                    th:attr="data-user-id=${comment.author.id}" data-bs-toggle="modal"
+                                    data-bs-target="#userInfoModal">test3</a></td>
+                            <td th:text="${#temporals.format(comment.createAt, 'yyyy-MM-dd HH:mm')}">2024.07.01</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div class="">
+                    <button type="submit" class="btn btn-primary">삭제</button>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <div th:if="${!paging.isEmpty()}">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                                <a class="page-link" th:href="@{|?page=${paging.number-1}|}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+                                th:if="${page >= paging.number-2 and page <= paging.number+2}"
+                                th:classappend="${page == paging.number} ? 'active'">
+                                <a class="page-link" th:text="${page}" th:href="@{|?page=${page}|}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                                <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="userInfoModalLabel">User Info</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="d-flex justify-content-center">
+                                <img id="userProfile" class="rounded-pill" style="width: 200px; height: 200px;" alt="">
+                                <p></p>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="username" class="col-sm-2 col-form-label">Username</label>
+                                <div class="col-sm-10">
+                                    <input id="username" type="text" readonly class="form-control-plaintext">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="email" class="col-sm-2 col-form-label">Email</label>
+                                <div class="col-sm-10">
+                                    <input id="userEmail" type="text" readonly class="form-control-plaintext"
+                                        value="test1@test.com">
+                                </div>
+                            </div>
+
+                            <h5>Written Post</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Create At</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="postList">
+
+                                </tbody>
+                            </table>
+                            <nav id="postPagination">
+                            </nav>
+
+                            <h5>Written Comment</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Content</th>
+                                        <th scope="col">Post Title</th>
+                                        <th scope="col">Create At</th>
+                                        <th scope="col"></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="commentList">
+
+                                </tbody>
+                            </table>
+                            <nav id="commentPagination">
+                            </nav>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+
+            $(document).ready(function () {
+
+                $('#commentTable').on('submit', function (event) {
+                    event.preventDefault(); // 폼 기본 제출 동작을 막음
+
+                    var csrfToken = $('meta[name="_csrf"]').attr('content');
+                    var csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+                    let checkedValues = [];
+                    $('input[name="checkedComment"]:checked').each(function () {
+                        checkedValues.push($(this).val()); // 선택된 값들을 배열에 추가
+                    });
+
+                    // 서버로 데이터 전송
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/comments/delete',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader(csrfHeader, csrfToken);
+                        },
+                        contentType: 'application/json',
+                        data: JSON.stringify({ checkedComments: checkedValues }),
+                        success: function (response) {
+                            window.location.href = '/admin/comment'
+                        },
+                        error: function (error) {
+                            alert('삭제할 댓글이 없습니다.');
+                        }
+                    });
+                });
+
+            });
+        </script>
+
+
+
+    </div>
+    </div>
+</body>
+
+</html>
