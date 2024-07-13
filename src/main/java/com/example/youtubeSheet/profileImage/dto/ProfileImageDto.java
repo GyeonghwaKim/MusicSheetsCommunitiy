@@ -1,11 +1,11 @@
-package com.example.youtubeSheet.user.siteuser.dto;
+package com.example.youtubeSheet.profileImage.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProfileImgDto {
+public class ProfileImageDto {
     private Long id;
 
     private String originalImgName;

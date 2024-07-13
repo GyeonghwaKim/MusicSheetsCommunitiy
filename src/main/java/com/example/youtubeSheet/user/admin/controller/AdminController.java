@@ -1,13 +1,13 @@
 package com.example.youtubeSheet.user.admin.controller;
 
 
+import com.example.youtubeSheet.profileImage.service.ProfileImageService;
 import com.example.youtubeSheet.comment.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.post.PostService;
-import com.example.youtubeSheet.post.dto.PostDto;
-import com.example.youtubeSheet.user.siteuser.service.ProfileImgService;
+import com.example.youtubeSheet.post.dto.PostDto;;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
-import com.example.youtubeSheet.user.siteuser.dto.ProfileImgDto;
+import com.example.youtubeSheet.profileImage.dto.ProfileImageDto;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class AdminController {
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
-    private final ProfileImgService profileImgService;
+    private final ProfileImageService profileImageService;
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public String adminHome(Model model){
@@ -139,8 +139,8 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Not Found");
         }
 
-        ProfileImgDto profileImgDto=this.profileImgService.getProfileImg(siteUserDto.getProfileImgId());
-        if (profileImgDto == null) {
+        ProfileImageDto profileImageDto =this.profileImageService.getProfileImage(siteUserDto.getProfileImgId());
+        if (profileImageDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile Img Not Found");
         }
 
@@ -148,7 +148,7 @@ public class AdminController {
         accountDto.setId(userId);
         accountDto.setUsername(siteUserDto.getUsername());
         accountDto.setEmail(siteUserDto.getEmail());
-        accountDto.setStoredImgName(profileImgDto.getStoredImgName());
+        accountDto.setStoredImgName(profileImageDto.getStoredImgName());
 
         return ResponseEntity.ok(accountDto);
     }

@@ -1,11 +1,11 @@
 package com.example.youtubeSheet.user.siteuser;
 
 
+import com.example.youtubeSheet.profileImage.service.ProfileImageService;
 import com.example.youtubeSheet.user.siteuser.dto.ProfileForm;
-import com.example.youtubeSheet.user.siteuser.dto.ProfileImgDto;
+import com.example.youtubeSheet.profileImage.dto.ProfileImageDto;
 import com.example.youtubeSheet.user.siteuser.dto.SignupForm;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
-import com.example.youtubeSheet.user.siteuser.service.ProfileImgService;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class UserController {
 
 
     private final UserService userService;
-    private final ProfileImgService profileImgService;
+    private final ProfileImageService profileImageService;
 
 
 
@@ -80,12 +80,12 @@ public class UserController {
     @GetMapping("/profile")
     public String showProfile(Model model, Principal principal){
         SiteUserDto siteUserDto=this.userService.getUser(principal.getName());
-        ProfileImgDto profileImgDto=this.profileImgService.getProfileImg(siteUserDto.getProfileImgId());
+        ProfileImageDto profileImageDto =this.profileImageService.getProfileImage(siteUserDto.getProfileImgId());
 
         ProfileForm profileForm=new ProfileForm();
         profileForm.setUsername(siteUserDto.getUsername());
         profileForm.setEmail(siteUserDto.getEmail());
-        profileForm.setStoredFileName(profileImgDto.getStoredImgName());
+        profileForm.setStoredFileName(profileImageDto.getStoredImgName());
 
         model.addAttribute("profileForm",profileForm);
 
@@ -124,15 +124,15 @@ public class UserController {
 
 
     @PreAuthorize("isAuthenticated")
-    @PostMapping("/profileImg")
+    @PostMapping("/profileImage")
     public String updateProfileImg(@RequestParam("multipartFile") MultipartFile multipartFile,Principal principal) throws IOException {
 
         SiteUserDto siteUserDto=this.userService.getUser(principal.getName());
 
         if(!multipartFile.isEmpty()){
-            this.profileImgService.changeProfileImg(multipartFile,siteUserDto.getProfileImgId());
+            this.profileImageService.uploadProfileImage(multipartFile,siteUserDto.getProfileImgId());
         }else{
-            this.profileImgService.changeDefaultProfileImg(siteUserDto.getProfileImgId());
+            this.profileImageService.setDefaultProfileImage(siteUserDto.getProfileImgId());
         }
 
         return "redirect:/profile";

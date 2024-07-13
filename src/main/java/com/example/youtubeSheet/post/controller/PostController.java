@@ -1,6 +1,7 @@
 package com.example.youtubeSheet.post.controller;
 
 
+import com.example.youtubeSheet.profileImage.service.ProfileImageService;
 import com.example.youtubeSheet.comment.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.comment.dto.CommentForm;
@@ -8,7 +9,6 @@ import com.example.youtubeSheet.post.PostService;
 import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
-import com.example.youtubeSheet.user.siteuser.service.ProfileImgService;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class PostController {
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
-    private final ProfileImgService profileImgService;
+    private final ProfileImageService profileImageService;
 
 
     @GetMapping("/list")
@@ -163,11 +163,11 @@ public class PostController {
         return ResponseEntity.ok(postDto.getPostFileList());
     }
 
-    @GetMapping("/comment/profileImg/{postId}")
+    @GetMapping("/comment/profileImage/{postId}")
     public ResponseEntity<?> findCommentProfileImgStoredNameList(@PathVariable("postId")Long id){
         PostDto postDto=this.postService.getPost(id);
         if (postDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found Post");
         }
 
         List<CommentDto> commentList=this.commentService.getCommentsByPostId(postDto.getId());
@@ -175,8 +175,11 @@ public class PostController {
 
         List<String> commentProfileImgStoredNameList = commentList.stream()
                 .map(commentDto -> commentDto.getAuthor().getProfileImgId())
-                .map(profileImgId -> this.profileImgService.getProfileImg(profileImgId).getStoredImgName())
+                .map(profileImgId -> this.profileImageService.getProfileImage(profileImgId).getStoredImgName())
                 .toList();
+
+
+        commentProfileImgStoredNameList.forEach(System.out::println);
 
         return ResponseEntity.ok(commentProfileImgStoredNameList);
     }

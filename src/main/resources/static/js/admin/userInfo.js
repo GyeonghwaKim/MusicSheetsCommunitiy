@@ -4,7 +4,7 @@ $(document).ready(function () {
             url: '/admin/userProfile/' + userId,
             type: 'GET',
             success: function (data) {
-                $("#userProfile").attr('src', "/profiles/" + data.storedImgName);
+                $("#userProfile").attr('src',data.storedImgName);
                 $("#username").val(data.username);
                 $("#userEmail").val(data.email);
             },

@@ -1,11 +1,11 @@
 package com.example.youtubeSheet.user.siteuser.service;
 
+import com.example.youtubeSheet.profileImage.service.ProfileImageService;
 import com.example.youtubeSheet.exception.DataNotFoundException;
 
-import com.example.youtubeSheet.user.siteuser.repository.ProfileImgRepository;
+import com.example.youtubeSheet.profileImage.dto.ProfileImageDto;
 import com.example.youtubeSheet.user.siteuser.repository.UserRepository;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
-import com.example.youtubeSheet.user.siteuser.entitiy.ProfileImg;
 import com.example.youtubeSheet.user.siteuser.entitiy.SiteUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class UserService {
     private final ModelMapper modelMapper;
 
 
-    private final ProfileImgRepository profileImgRepository;
+    private final ProfileImageService profileImageService;
     private SiteUserDto of(SiteUser siteUser){
         return modelMapper.map(siteUser,SiteUserDto.class);
     }
@@ -58,11 +58,11 @@ public class UserService {
         String encodePassword=passwordEncoder.encode(password);
         siteUser.setPassword(encodePassword);
 
-        ProfileImg profileImg=new ProfileImg();
-        ProfileImg newProfileImg=this.profileImgRepository.save(profileImg);
+        ProfileImageDto profileImage=new ProfileImageDto();
+        ProfileImageDto saveProfileImage=this.profileImageService.save(profileImage);
+        this.profileImageService.setDefaultProfileImage(saveProfileImage.getId());
 
-        siteUser.setProfileImgId(newProfileImg.getId());
-
+        siteUser.setProfileImgId(saveProfileImage.getId());
         siteUser.setSignupDate(LocalDateTime.now());
 
         this.userRepository.save(siteUser);

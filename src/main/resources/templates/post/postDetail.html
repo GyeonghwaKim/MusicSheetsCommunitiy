@@ -103,17 +103,17 @@
             $(document).ready(function () {
 
                 $.ajax({
-                    url: `/post/comment/profileImg/[[${post.id}]]`,
+                    url: `/post/comment/profileImage/[[${post.id}]]`,
                     method: 'GET',
                     success: function (storedNameList) {
                         storedNameList.forEach((element, index) => {
                             const profileImgAndContentDiv = $(`#profileImgAndContent-${index}`);
-                            const imgElement = `<img src="/profiles/${element}" style="width: 30px; height: 30px;" class="rounded-circle">`;
+                            const imgElement = `<img src="${element}" style="width: 30px; height: 30px;" class="rounded-circle">`;
                             profileImgAndContentDiv.prepend(imgElement);
                         });
                     },
                     error: function (error) {
-                        console.log("Error fetching profile images", error);
+
                     }
 
                 });
