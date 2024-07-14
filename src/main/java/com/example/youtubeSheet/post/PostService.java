@@ -9,9 +9,11 @@ import com.example.youtubeSheet.post.dto.PostImageDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.post.entitiy.Post;
 import com.example.youtubeSheet.post.entitiy.PostImage;
-import com.example.youtubeSheet.post.repository.PostImageRepository;
+import com.example.youtubeSheet.post.repository.PostFileRepository;
 import com.example.youtubeSheet.post.repository.PostRepository;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,6 +43,7 @@ public class PostService {
 
     private final ModelMapper modelMapper;
 
+
     private PostDto of(Post post){
         return modelMapper.map(post,PostDto.class);
     }
@@ -52,6 +56,12 @@ public class PostService {
         return postPage.map(this::of);
     }
 
+    private PostImageDto of(PostImage postImage){
+        return modelMapper.map(postImage, PostImageDto.class);
+    }
+    private PostImage of(PostImageDto postImageDto){
+        return modelMapper.map(postImageDto, PostImage.class);
+    }
 
     public List<PostDto> getPostsByAuthorId(Long authorId) {
         List<Post> postList=this.postRepository.findAllByAuthorId(authorId);
@@ -85,7 +95,7 @@ public class PostService {
         postDto.setAuthor(siteUserDto);
         postDto.setCreateAt(LocalDateTime.now());
 
-        Post savePost=this.postRepository.save(of(postDto));
+        savePostFile(multipartFileList,postDto); //리스트를 반환?
 
         this.postImageService.save(multipartFileList, savePost);
 
@@ -103,29 +113,52 @@ public class PostService {
     }
 
 
-    public void modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList,List<Long> deleteFileId) throws IOException {
+    public void modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList) throws IOException {
 
         postDto.setTitle(postForm.getTitle());
-        postDto.setContent(postDto.getContent());
+        postDto.setContent(postForm.getContent());
         postDto.setUpdateAt(LocalDateTime.now());
+
+        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
+
+            ObjectMapper objectMapper=new ObjectMapper();
+            String json=deleteFileJsonList.toString();
+
+            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
+
+            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
+
+            if(!deleteImageList.isEmpty()) deleteImageList.forEach(postImageDto -> postDto.getPostImageList().remove(postImageDto));
+
+        }
+
+        savePostFile(multipartFileList, postDto);
 
         Post modifyPost=this.postRepository.save(of(postDto));
 
-        if(deleteFileId !=null && modifyPost.getPostImageList().size() == deleteFileId.size()) modifyPost.setFileAttached(0);
-
-
-        if(deleteFileId !=null && !deleteFileId.isEmpty()){
-            for(Long deleteId:deleteFileId){
-                Optional<PostImage> optionalPostFile = this.postImageService.findById(deleteId);
-                optionalPostFile.ifPresent(this.postImageService::delete);
-            }
-        }
-
-        this.postImageService.save(multipartFileList, modifyPost);
-
     }
 
+    private void savePostFile(List<MultipartFile> multipartFileList,PostDto postDto) throws IOException {
+        for(MultipartFile file: multipartFileList){
+            if(file.getSize()>0){
 
+                if(postDto.getFileAttached()==0) postDto.setFileAttached(1);
+
+                String originalFileName=file.getOriginalFilename();
+                String storedFileName=System.currentTimeMillis()+"_"+originalFileName;
+                String savePath="C:/Users/Hwa/springbootImg/sheets/"+storedFileName;
+                file.transferTo(new File(savePath));
+                PostImage postImage =new PostImage();
+                postImage.setOriginalFileName(originalFileName);
+                postImage.setStoredFileName(storedFileName);
+
+                this.fileRepository.save(postImage);
+
+                postDto.getPostImageList().add(of(postImage));
+
+            }
+        }
+    }
 
     public void deletePost(PostDto postDto) {
 

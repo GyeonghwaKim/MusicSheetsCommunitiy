@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,8 +23,6 @@ public class PostImage {
 
     private String storedFileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
 
 }
 

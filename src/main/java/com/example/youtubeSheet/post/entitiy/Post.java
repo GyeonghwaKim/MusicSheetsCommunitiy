@@ -39,7 +39,13 @@ public class Post {
     @Column(nullable = false, columnDefinition = "int default 0")
     private int fileAttached;
 
-    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<PostImage> postImageList =new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "post_id") // post_id는 PostImage 테이블에 외래 키로 추가됩니다
+    private List<PostImage> postImageList=new ArrayList<>();
+
+
+    //    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
+//    private List<PostImage> postImageList =new ArrayList<>();
 
 }

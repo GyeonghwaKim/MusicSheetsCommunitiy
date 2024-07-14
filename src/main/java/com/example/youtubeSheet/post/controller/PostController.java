@@ -10,6 +10,8 @@ import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -113,8 +116,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{postId}")
-    public String modifyPost(@Valid @ModelAttribute("postForm")PostForm postForm,BindingResult bindingResult, @PathVariable(name = "postId") Long postId
-            ,@RequestParam(required = false, name = "deleteFileId") List<Long> deleteFileId, Principal principal) throws IOException {
+    public String modifyPost(@Valid @ModelAttribute("postForm")PostForm postForm,BindingResult bindingResult, @PathVariable(name = "postId") Long postId, Principal principal) throws IOException {
 
         if(bindingResult.hasErrors()) return "/post/postForm";
 
@@ -122,10 +124,12 @@ public class PostController {
 
         deleteValidation(principal, postDto);
 
-        this.postService.modify(postDto,postForm,postForm.getMultipartFileList(),deleteFileId);
+        this.postService.modify(postDto,postForm,postForm.getMultipartFileList(),postForm.getPostImageJsonList());
 
         return "redirect:/post/detail/" + postId;
     }
+
+
 
 
     @PreAuthorize("isAuthenticated()")
@@ -158,9 +162,9 @@ public class PostController {
 
         PostDto postDto=this.postService.getPost(id);
         if (postDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not Found Post");
         }
-        return ResponseEntity.ok(postDto.getPostFileList());
+        return ResponseEntity.ok(postDto.getPostImageList());
     }
 
     @GetMapping("/comment/profileImage/{postId}")
@@ -191,6 +195,68 @@ public class PostController {
     private void setCommentList(Page<PostDto> paging) {
         paging.forEach(postDto ->
                 postDto.setCommentList(this.commentService.getCommentsByPostId(postDto.getId())));
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> test(){
+        String json = "{\"id\":32, \"originalFileName\":\"1.png\", \"storedFileName\":\"1720950025164_1.png\"}";
+
+        List<String> jsonList=new ArrayList<>(List.of(json));
+
+        log.info("list ={}",jsonList);
+
+        ObjectMapper objectMapper=new ObjectMapper();
+
+        List<Test> testList=
+        jsonList.stream().map(s -> {
+            try {
+                log.info("s ={}",s);
+                return objectMapper.readValue(s,Test.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+
+        return ResponseEntity.ok(testList);
+
+    }
+    class Test{
+        private Long id;
+        private String originalFileName;
+        private String storedFileName;
+
+        public Test() {
+        }
+
+        public Test(Long id, String originalFileName, String storedFileName) {
+            this.id = id;
+            this.originalFileName = originalFileName;
+            this.storedFileName = storedFileName;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getOriginalFileName() {
+            return originalFileName;
+        }
+
+        public void setOriginalFileName(String originalFileName) {
+            this.originalFileName = originalFileName;
+        }
+
+        public String getStoredFileName() {
+            return storedFileName;
+        }
+
+        public void setStoredFileName(String storedFileName) {
+            this.storedFileName = storedFileName;
+        }
     }
 
 }
