@@ -40,6 +40,6 @@ public class Post {
     private int fileAttached;
 
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<PostFile> postFileList=new ArrayList<>();
+    private List<PostImage> postImageList =new ArrayList<>();
 
 }

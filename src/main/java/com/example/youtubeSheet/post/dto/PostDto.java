@@ -26,5 +26,5 @@ public class PostDto {
     private LocalDateTime updateAt;
     private Set<SiteUserDto> voter;
     private int fileAttached;
-    private List<PostFileDto> postFileList=new ArrayList<>();
+    private List<PostImageDto> postFileList=new ArrayList<>();
 }

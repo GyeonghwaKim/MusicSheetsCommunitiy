@@ -27,5 +27,5 @@ public class PostForm {
     private List<String> originalNameList;
     private List<String> stroedNameList;
 
-    private List<PostFileDto> postFileList=new ArrayList<>();
+    private List<PostImageDto> postFileList=new ArrayList<>();
 }

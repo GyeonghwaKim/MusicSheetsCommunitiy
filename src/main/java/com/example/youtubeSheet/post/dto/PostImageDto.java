@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PostFileDto {
+public class PostImageDto {
     private Long id;
     private String originalFileName;
     private String storedFileName;

@@ -5,11 +5,11 @@ import com.example.youtubeSheet.comment.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.exception.DataNotFoundException;
 import com.example.youtubeSheet.post.dto.PostDto;
-import com.example.youtubeSheet.post.dto.PostFileDto;
+import com.example.youtubeSheet.post.dto.PostImageDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.post.entitiy.Post;
-import com.example.youtubeSheet.post.entitiy.PostFile;
-import com.example.youtubeSheet.post.repository.PostFileRepository;
+import com.example.youtubeSheet.post.entitiy.PostImage;
+import com.example.youtubeSheet.post.repository.PostImageRepository;
 import com.example.youtubeSheet.post.repository.PostRepository;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,7 +36,7 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    private final PostFileRepository fileRepository;
+    private final PostImageRepository postImageService;
 
     private final ModelMapper modelMapper;
 
@@ -54,12 +52,6 @@ public class PostService {
         return postPage.map(this::of);
     }
 
-    private PostFileDto of(PostFile postFile){
-        return modelMapper.map(postFile,PostFileDto.class);
-    }
-    private PostFile of(PostFileDto postFileDto){
-        return modelMapper.map(postFileDto,PostFile.class);
-    }
 
     public List<PostDto> getPostsByAuthorId(Long authorId) {
         List<Post> postList=this.postRepository.findAllByAuthorId(authorId);
@@ -95,7 +87,7 @@ public class PostService {
 
         Post savePost=this.postRepository.save(of(postDto));
 
-        savePostFile(multipartFileList,savePost);
+        this.postImageService.save(multipartFileList, savePost);
 
         return of(savePost);
 
@@ -119,40 +111,21 @@ public class PostService {
 
         Post modifyPost=this.postRepository.save(of(postDto));
 
-        if(deleteFileId !=null && modifyPost.getPostFileList().size() == deleteFileId.size()) modifyPost.setFileAttached(0);
+        if(deleteFileId !=null && modifyPost.getPostImageList().size() == deleteFileId.size()) modifyPost.setFileAttached(0);
 
 
         if(deleteFileId !=null && !deleteFileId.isEmpty()){
             for(Long deleteId:deleteFileId){
-                Optional<PostFile> optionalPostFile = this.fileRepository.findById(deleteId);
-                optionalPostFile.ifPresent(this.fileRepository::delete);
+                Optional<PostImage> optionalPostFile = this.postImageService.findById(deleteId);
+                optionalPostFile.ifPresent(this.postImageService::delete);
             }
         }
 
-        savePostFile(multipartFileList, modifyPost);
+        this.postImageService.save(multipartFileList, modifyPost);
 
     }
 
-    private void savePostFile(List<MultipartFile> multipartFileList, Post post) throws IOException {
-        for(MultipartFile file: multipartFileList){
-            if(file.getSize()>0){
 
-                if(post.getFileAttached()==0) post.setFileAttached(1);
-
-                String originalFileName=file.getOriginalFilename();
-                String storedFileName=System.currentTimeMillis()+"_"+originalFileName;
-                String savePath="C:/Users/Hwa/springbootImg/sheets/"+storedFileName;
-                file.transferTo(new File(savePath));
-                PostFile postFile=new PostFile();
-                postFile.setOriginalFileName(originalFileName);
-                postFile.setStoredFileName(storedFileName);
-                postFile.setPost(post);
-                this.fileRepository.save(postFile);
-
-
-            }
-        }
-    }
 
     public void deletePost(PostDto postDto) {
 
