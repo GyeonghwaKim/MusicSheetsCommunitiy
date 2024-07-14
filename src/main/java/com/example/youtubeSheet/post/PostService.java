@@ -1,19 +1,15 @@
 package com.example.youtubeSheet.post;
 
 
+import com.example.youtubeSheet.PostImageService;
 import com.example.youtubeSheet.comment.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.exception.DataNotFoundException;
 import com.example.youtubeSheet.post.dto.PostDto;
-import com.example.youtubeSheet.post.dto.PostImageDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.post.entitiy.Post;
-import com.example.youtubeSheet.post.entitiy.PostImage;
-import com.example.youtubeSheet.post.repository.PostFileRepository;
 import com.example.youtubeSheet.post.repository.PostRepository;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -29,7 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,7 +35,7 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    private final PostImageRepository postImageService;
+    private final PostImageService postImageService;
 
     private final ModelMapper modelMapper;
 
@@ -56,11 +52,13 @@ public class PostService {
         return postPage.map(this::of);
     }
 
-    private PostImageDto of(PostImage postImage){
-        return modelMapper.map(postImage, PostImageDto.class);
-    }
-    private PostImage of(PostImageDto postImageDto){
-        return modelMapper.map(postImageDto, PostImage.class);
+    public PostDto getPost(Long postId) {
+
+        Optional<Post> _post=this.postRepository.findById(postId);
+
+        if(_post.isPresent()) return of(_post.get());
+        else throw new DataNotFoundException("Post Not Found");
+
     }
 
     public List<PostDto> getPostsByAuthorId(Long authorId) {
@@ -74,16 +72,17 @@ public class PostService {
         return convertToPostDtoPage(this.postRepository.findAll(pageable));
     }
 
-    public Page<PostDto> searchPagedPosts(int page, String keyword){
-        Pageable pageable = getPageable(page, 10);
-        return convertToPostDtoPage(this.postRepository.findByTitleContainingOrAuthorUsernameContaining(keyword,keyword,pageable));
-
-    }
-
     public Page<PostDto> getPagedPostsByAuthorId(Long authorId, int page) {
         Pageable pageable = getPageable(page, 5);
 
         return convertToPostDtoPage(this.postRepository.findAllByAuthorId(authorId,pageable));
+    }
+
+
+    public Page<PostDto> searchPagedPosts(int page, String keyword){
+        Pageable pageable = getPageable(page, 10);
+        return convertToPostDtoPage(this.postRepository.findByTitleContainingOrAuthorUsernameContaining(keyword,keyword,pageable));
+
     }
 
 
@@ -94,71 +93,30 @@ public class PostService {
         postDto.setContent(content);
         postDto.setAuthor(siteUserDto);
         postDto.setCreateAt(LocalDateTime.now());
+        postDto.setPostImageList(this.postImageService.save(postDto,multipartFileList,null));
 
-        savePostFile(multipartFileList,postDto); //리스트를 반환?
-
-        this.postImageService.save(multipartFileList, savePost);
+        Post savePost=this.postRepository.save(of(postDto));
 
         return of(savePost);
 
     }
 
-    public PostDto getPost(Long postId) {
-
-        Optional<Post> _post=this.postRepository.findById(postId);
-
-        if(_post.isPresent()) return of(_post.get());
-        else throw new DataNotFoundException("Post Not Found");
-
-    }
 
 
-    public void modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList) throws IOException {
+    public PostDto modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList) throws IOException {
 
         postDto.setTitle(postForm.getTitle());
         postDto.setContent(postForm.getContent());
         postDto.setUpdateAt(LocalDateTime.now());
 
-        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
-
-            ObjectMapper objectMapper=new ObjectMapper();
-            String json=deleteFileJsonList.toString();
-
-            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
-
-            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
-
-            if(!deleteImageList.isEmpty()) deleteImageList.forEach(postImageDto -> postDto.getPostImageList().remove(postImageDto));
-
-        }
-
-        savePostFile(multipartFileList, postDto);
+        postDto.setPostImageList(this.postImageService.save(postDto,multipartFileList,deleteFileJsonList));
 
         Post modifyPost=this.postRepository.save(of(postDto));
 
+        return of(modifyPost);
+
     }
 
-    private void savePostFile(List<MultipartFile> multipartFileList,PostDto postDto) throws IOException {
-        for(MultipartFile file: multipartFileList){
-            if(file.getSize()>0){
-
-                if(postDto.getFileAttached()==0) postDto.setFileAttached(1);
-
-                String originalFileName=file.getOriginalFilename();
-                String storedFileName=System.currentTimeMillis()+"_"+originalFileName;
-                String savePath="C:/Users/Hwa/springbootImg/sheets/"+storedFileName;
-                file.transferTo(new File(savePath));
-                PostImage postImage =new PostImage();
-                postImage.setOriginalFileName(originalFileName);
-                postImage.setStoredFileName(storedFileName);
-
-                this.fileRepository.save(postImage);
-
-                postDto.getPostImageList().add(of(postImage));
-
-            }
-        }
-    }
 
     public void deletePost(PostDto postDto) {
 
