@@ -22,8 +22,7 @@
 
 
                 <div class="input-group">
-                    <input type="file" class="form-control" accept="image/*" onchange="uploadFiles(this.files)"
-                        th:field="*{multipartFileList}" multiple>
+                    <input type="file" class="form-control" accept="image/*" onchange="uploadFiles(this.files)" th:field="*{multipartFileList}" multiple>
                 </div>
                 <div id="fileList"></div>
                 <div id="addFileList"></div>
@@ -60,7 +59,7 @@
             const maxSize = 3 * 1024 * 1024;
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
-            function uploadFiles(files) {
+            function uploadFiles(postImageList) {
 
                 const addFileList = document.getElementById('addFileList');
 
@@ -70,77 +69,81 @@
 
                 selectedFiles = [];
 
-                for (let i = 0; i < files.length; i++) {
-
-                    if (files[i]) {
-                        if (!allowedTypes.includes(files[i].type)) {
+                for (let i = 0; i < postImageList.length; i++) {
+//함수로 만들기
+                    if (postImageList[i]) {
+                        if (!allowedTypes.includes(postImageList[i].type)) {
                             alert("이미지 파일만 업로드 가능합니다. (jpg, png, gif)");
                             document.getElementById('multipartFileList').value = '';
                             return;
                         }
-                        if (files[i].size > maxSize) {
+                        if (postImageList[i].size > maxSize) {
                             alert("파일 크기가 3MB를 초과합니다. 다른 파일을 선택해주세요.");
                             document.getElementById('multipartFileList').value = '';
                             return;
                         }
                     }
 
-                    selectedFiles.push(files[i]);
-                    const item = document.createElement('div');
-                    const fileName = document.createTextNode(files[i].name);
-                    const deleteButton = document.createElement('button');
+                    selectedFiles.push(postImageList[i]);
+                    const imageDiv = document.createElement('div');
+                    const fileName = document.createTextNode(postImageList[i].name);
 
+                    const deleteButton = document.createElement('button');
                     deleteButton.addEventListener('click', (event) => {
                         event.preventDefault();
-                        deleteFile(files[i], item);
+                        deleteFile(postImageList[i], imageDiv);
                     });
-
                     deleteButton.innerText = "X";
-                    item.appendChild(fileName);
-                    item.appendChild(deleteButton);
-                    addFileList.appendChild(item);
+
+                    imageDiv.appendChild(fileName);
+                    imageDiv.appendChild(deleteButton);
+
+                    addFileList.appendChild(imageDiv);
                 }
             }
 
-            function deleteFile(fileToDelete, item) {
+            function deleteFile(fileToDelete, divToDelete) {
 
                 selectedFiles = selectedFiles.filter(file => file !== fileToDelete);
-                item.remove();
+                divToDelete.remove();
 
-                const inputFile = document.querySelector('input[type="file"]');
+                const inputFileList = document.querySelector('input[type="file"]');
                 const dataTransfer = new DataTransfer();
 
                 selectedFiles.forEach(file => {
                     dataTransfer.items.add(file);
                 });
 
-                inputFile.files = dataTransfer.files;
+                inputFileList.files = dataTransfer.files;
             }
 
 
 
 
-            function loadFiles(files) {
+            function loadFiles(postImageList) {
                 const fileList = document.getElementById('fileList');
-                for (let i = 0; i < files.length; i++) {
-                    const item = document.createElement('div');
-                    const fileName = document.createTextNode(files[i].originalFileName);
+                for (let i = 0; i < postImageList.length; i++) {
+                    const imageDiv = document.createElement('div');
+                    const fileName = document.createTextNode(postImageList[i].originalFileName);
                     const deleteButton = document.createElement('button');
 
+
                     deleteButton.addEventListener('click', (event) => {
-                        item.remove();
+                        imageDiv.remove();
                         event.preventDefault();
                         const deleteItem = document.createElement('input');
-                        deleteItem.setAttribute("name", "deleteFileId");
-                        deleteItem.setAttribute("value", files[i].id);
+                        deleteItem.setAttribute("name", "postImageJsonList");
+
+                        const postImageJson = JSON.stringify(postImageList[i]);
+                        deleteItem.setAttribute("value", postImageJson);
                         deleteItem.setAttribute("type", "hidden");
                         fileList.appendChild(deleteItem);
                     });
 
                     deleteButton.innerText = "X";
-                    item.appendChild(fileName);
-                    item.appendChild(deleteButton);
-                    fileList.appendChild(item);
+                    imageDiv.appendChild(fileName);
+                    imageDiv.appendChild(deleteButton);
+                    fileList.appendChild(imageDiv);
                 }
             }
 

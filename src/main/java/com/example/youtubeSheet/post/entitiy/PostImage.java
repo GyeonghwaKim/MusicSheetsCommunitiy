@@ -1,18 +1,19 @@
 package com.example.youtubeSheet.post.entitiy;
 
-import com.example.youtubeSheet.post.entitiy.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class PostFile {
+public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +23,6 @@ public class PostFile {
 
     private String storedFileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Post post;
 
 }
 

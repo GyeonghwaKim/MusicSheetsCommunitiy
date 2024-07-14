@@ -5,13 +5,15 @@ import com.example.youtubeSheet.comment.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.exception.DataNotFoundException;
 import com.example.youtubeSheet.post.dto.PostDto;
-import com.example.youtubeSheet.post.dto.PostFileDto;
+import com.example.youtubeSheet.post.dto.PostImageDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.post.entitiy.Post;
-import com.example.youtubeSheet.post.entitiy.PostFile;
+import com.example.youtubeSheet.post.entitiy.PostImage;
 import com.example.youtubeSheet.post.repository.PostFileRepository;
 import com.example.youtubeSheet.post.repository.PostRepository;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,7 +22,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -29,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,6 +44,7 @@ public class PostService {
 
     private final ModelMapper modelMapper;
 
+
     private PostDto of(Post post){
         return modelMapper.map(post,PostDto.class);
     }
@@ -54,11 +57,11 @@ public class PostService {
         return postPage.map(this::of);
     }
 
-    private PostFileDto of(PostFile postFile){
-        return modelMapper.map(postFile,PostFileDto.class);
+    private PostImageDto of(PostImage postImage){
+        return modelMapper.map(postImage, PostImageDto.class);
     }
-    private PostFile of(PostFileDto postFileDto){
-        return modelMapper.map(postFileDto,PostFile.class);
+    private PostImage of(PostImageDto postImageDto){
+        return modelMapper.map(postImageDto, PostImage.class);
     }
 
     public List<PostDto> getPostsByAuthorId(Long authorId) {
@@ -93,9 +96,9 @@ public class PostService {
         postDto.setAuthor(siteUserDto);
         postDto.setCreateAt(LocalDateTime.now());
 
-        Post savePost=this.postRepository.save(of(postDto));
+        savePostFile(multipartFileList,postDto); //리스트를 반환?
 
-        savePostFile(multipartFileList,savePost);
+        Post savePost=this.postRepository.save(of(postDto));
 
         return of(savePost);
 
@@ -111,44 +114,48 @@ public class PostService {
     }
 
 
-    public void modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList,List<Long> deleteFileId) throws IOException {
+    public void modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList) throws IOException {
 
         postDto.setTitle(postForm.getTitle());
-        postDto.setContent(postDto.getContent());
+        postDto.setContent(postForm.getContent());
         postDto.setUpdateAt(LocalDateTime.now());
+
+        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
+
+            ObjectMapper objectMapper=new ObjectMapper();
+            String json=deleteFileJsonList.toString();
+
+            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
+
+            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
+
+            if(!deleteImageList.isEmpty()) deleteImageList.forEach(postImageDto -> postDto.getPostImageList().remove(postImageDto));
+
+        }
+
+        savePostFile(multipartFileList, postDto);
 
         Post modifyPost=this.postRepository.save(of(postDto));
 
-        if(deleteFileId !=null && modifyPost.getPostFileList().size() == deleteFileId.size()) modifyPost.setFileAttached(0);
-
-
-        if(deleteFileId !=null && !deleteFileId.isEmpty()){
-            for(Long deleteId:deleteFileId){
-                Optional<PostFile> optionalPostFile = this.fileRepository.findById(deleteId);
-                optionalPostFile.ifPresent(this.fileRepository::delete);
-            }
-        }
-
-        savePostFile(multipartFileList, modifyPost);
-
     }
 
-    private void savePostFile(List<MultipartFile> multipartFileList, Post post) throws IOException {
+    private void savePostFile(List<MultipartFile> multipartFileList,PostDto postDto) throws IOException {
         for(MultipartFile file: multipartFileList){
             if(file.getSize()>0){
 
-                if(post.getFileAttached()==0) post.setFileAttached(1);
+                if(postDto.getFileAttached()==0) postDto.setFileAttached(1);
 
                 String originalFileName=file.getOriginalFilename();
                 String storedFileName=System.currentTimeMillis()+"_"+originalFileName;
                 String savePath="C:/Users/Hwa/springbootImg/sheets/"+storedFileName;
                 file.transferTo(new File(savePath));
-                PostFile postFile=new PostFile();
-                postFile.setOriginalFileName(originalFileName);
-                postFile.setStoredFileName(storedFileName);
-                postFile.setPost(post);
-                this.fileRepository.save(postFile);
+                PostImage postImage =new PostImage();
+                postImage.setOriginalFileName(originalFileName);
+                postImage.setStoredFileName(storedFileName);
 
+                this.fileRepository.save(postImage);
+
+                postDto.getPostImageList().add(of(postImage));
 
             }
         }
