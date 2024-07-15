@@ -31,7 +31,7 @@
                         <div class="d-flex justify-content-end">
                             <a id="recommend" class="btn btn-sm btn-outline-dark"
                                 th:data-uri="@{|/post/vote/${post.id}|}"> <span>Recommend</span>
-                                <span class="badge bg-primary" th:text="${#lists.size(post.voter)}">1</span>
+                                <span class="badge bg-dark" th:text="${#lists.size(post.voter)}">1</span>
                             </a>
                         </div>
                     </div>

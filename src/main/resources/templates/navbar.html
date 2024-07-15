@@ -45,10 +45,10 @@
                                 <div class="d-flex justify-content-between mb-2">
                                     <a class="dropdown-item" th:href="@{/musicSheets(id=${musicSheet.id})}"
                                         th:text="${musicSheet.title}">Song's Title</a>
-                                    <input class="btn text-primary" type="button" id="nav-modifyBtn"
+                                    <input class="btn text-dark" type="button" id="nav-modifyBtn"
                                         th:value="#{nav.modifyBtn}">
                                     <form th:action="@{|/musicSheets/delete/${musicSheet.id}}|" method="post">
-                                        <input class="btn text-primary" type="submit" th:value="#{nav.deleteBtn}">
+                                        <input class="btn text-dark" type="submit" th:value="#{nav.deleteBtn}">
                                     </form>
                                 </div>
                                 <div id="nav-modifyDiv" style="display:none;">
@@ -56,7 +56,7 @@
                                         th:object="${modifyTitle}" method="post">
                                         <input class="form-control form-control-sm rounded ms-2" type="text"
                                             th:field="*{title}" required>
-                                        <input class="btn text-primary" type="submit" th:value="#{nav.modifyCheck}">
+                                        <input class="btn text-dark" type="submit" th:value="#{nav.modifyCheck}">
                                     </form>
                                 </div>
                             </li>
