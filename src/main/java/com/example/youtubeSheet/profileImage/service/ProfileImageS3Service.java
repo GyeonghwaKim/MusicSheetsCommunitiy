@@ -29,7 +29,8 @@ public class ProfileImageS3Service implements ProfileImageService {
 
     private final ModelMapper modelMapper;
 
-
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     private ProfileImageDto of(ProfileImage profileImage){
         return modelMapper.map(profileImage, ProfileImageDto.class);
@@ -40,8 +41,7 @@ public class ProfileImageS3Service implements ProfileImageService {
     }
 
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+
 
     @Override
     public ProfileImageDto getProfileImage(Long profileImageId) {
@@ -58,10 +58,7 @@ public class ProfileImageS3Service implements ProfileImageService {
         String storedImagePath ="profile/"+this.changeFileName(originalImageName);
         String storedImageName ="/s3Profile/"+storedImagePath;
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(image.getContentType());
-        metadata.setContentLength(image.getSize());
-        s3Client.putObject(bucket,storedImagePath, image.getInputStream(), metadata);
+        putObjectToS3(image, storedImagePath);
 
         ProfileImageDto profileImageDto=this.getProfileImage(profileImageId);
         profileImageDto.setOriginalImgName(originalImageName);
@@ -72,6 +69,7 @@ public class ProfileImageS3Service implements ProfileImageService {
         return s3Client.getUrl(bucket,storedImagePath).toString();
 
     }
+
 
     @Override
     public ProfileImageDto setDefaultProfileImage(Long profileImageId) {
@@ -93,6 +91,13 @@ public class ProfileImageS3Service implements ProfileImageService {
 
     private String changeFileName(String originalImageName){
         return System.currentTimeMillis()+"_"+originalImageName;
+    }
+
+    private void putObjectToS3(MultipartFile image, String storedImagePath) throws IOException {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(image.getContentType());
+        metadata.setContentLength(image.getSize());
+        s3Client.putObject(bucket, storedImagePath, image.getInputStream(), metadata);
     }
 
 
