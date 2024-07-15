@@ -20,7 +20,7 @@
                 <div class="card m-3">
                     <div th:if="${post.fileAttached==1}">
                         <div th:each="file : ${post.postImageList}">
-                            <img th:src="@{|/upload/${file.storedFileName}|}" class="card-img-top d-block mx-auto"
+                            <img th:src="@{|${file.storedFileName}|}" class="card-img-top d-block mx-auto"
                                 alt="..." style="width:90%">
                         </div>
                     </div>

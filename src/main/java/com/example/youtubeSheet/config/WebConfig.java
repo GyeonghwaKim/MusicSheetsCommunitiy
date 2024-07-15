@@ -8,29 +8,34 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-    private String resourcePath ="/upload/**";
+    private String postResourcePath ="/localPost/**";
 
-    private String savePath ="file:///C:/Users/Hwa/springbootImg/sheets/";
+    private String savePostPath ="file:///C:/Users/Hwa/springbootImg/sheets/localPost/";
     private String profileResourcePath ="/localProfile/**";
 
-    private String profileSavePath ="file:///C:/Users/Hwa/springbootImg/sheets/localProfile/";
+    private String saveProfilePath ="file:///C:/Users/Hwa/springbootImg/sheets/localProfile/";
 
     private String s3ProfileResourcePath="/s3Profile/**";
 
+    private String s3PostResourcePath="/s3Post/**";
+
     @Value("${cloud.aws.s3.url}")
-    private String s3ProfileSavePath;
+    private String s3SavePath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        registry.addResourceHandler(resourcePath)
-                .addResourceLocations(savePath);
+        registry.addResourceHandler(postResourcePath)
+                .addResourceLocations(savePostPath);
 
         registry.addResourceHandler(profileResourcePath)
-                .addResourceLocations(profileSavePath);
+                .addResourceLocations(saveProfilePath);
 
         registry.addResourceHandler(s3ProfileResourcePath)
-                .addResourceLocations(s3ProfileSavePath);
+                .addResourceLocations(s3SavePath);
+
+        registry.addResourceHandler(s3PostResourcePath)
+                .addResourceLocations(s3SavePath);
 
     }
 }

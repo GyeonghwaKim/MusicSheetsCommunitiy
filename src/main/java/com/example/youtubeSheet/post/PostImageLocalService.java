@@ -51,19 +51,20 @@ public class PostImageLocalService implements PostImageService {
         }
         List<PostImageDto> savePostImageDtoList=postDto.getPostImageList();
 
-        for(MultipartFile file: multipartFileList){
-            if(file.getSize()>0){
+        for(MultipartFile image: multipartFileList){
+            if(image.getSize()>0){
 
                 if(postDto.getFileAttached()==0) postDto.setFileAttached(1);
 
-                String originalFileName=file.getOriginalFilename();
-                String storedFileName=System.currentTimeMillis()+"_"+originalFileName;
-                String savePath="C:/Users/Hwa/springbootImg/sheets/"+storedFileName;
-                file.transferTo(new File(savePath));
+                String originalFileName=image.getOriginalFilename();
+                String storedFileName="/localPost/"+System.currentTimeMillis()+"_"+originalFileName;
+                String savePath="C:/Users/Hwa/springbootImg/sheets"+storedFileName;
+                image.transferTo(new File(savePath));
 
                 PostImageDto postImageDto =new PostImageDto();
                 postImageDto.setOriginalFileName(originalFileName);
                 postImageDto.setStoredFileName(storedFileName);
+
                 PostImage savePostImage=this.postImageRepository.save(of(postImageDto));
                 savePostImageDtoList.add(of(savePostImage));
 

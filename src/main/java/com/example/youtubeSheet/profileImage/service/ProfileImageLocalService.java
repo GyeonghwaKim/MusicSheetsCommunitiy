@@ -45,7 +45,7 @@ public class ProfileImageLocalService implements ProfileImageService {
     public String uploadProfileImage(MultipartFile image, Long profileImageId) throws IOException {
         String originalFileName=image.getOriginalFilename();
         String storedFileName="/localProfile/"+System.currentTimeMillis()+"_"+originalFileName;
-        String savePath="C:/Users/Hwa/springbootImg/sheets/localProfile/"+storedFileName;
+        String savePath="C:/Users/Hwa/springbootImg/sheets"+storedFileName;
         image.transferTo(new File(savePath));
 
         ProfileImageDto profileImageDto =this.getProfileImage(profileImageId);
