@@ -4,6 +4,7 @@ import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.postImage.repository.PostImageRepository;
 import com.example.youtubeSheet.postImage.dto.PostImageDto;
 import com.example.youtubeSheet.postImage.entity.PostImage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -36,18 +37,9 @@ public class PostImageLocalService implements PostImageService {
     @Override
     public List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList,List<String> deleteFileJsonList) throws IOException{
 
-
-        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
-            ObjectMapper objectMapper=new ObjectMapper();
-            String json=deleteFileJsonList.toString();
-            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
-
-            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
-
-            if(!deleteImageList.isEmpty()) deleteImageList.forEach(postImageDto -> postDto.getPostImageList().remove(postImageDto));
-
-        }
         List<PostImageDto> savePostImageDtoList=postDto.getPostImageList();
+
+        checkDeleteImage(postDto, deleteFileJsonList, savePostImageDtoList);
 
         for(MultipartFile image: multipartFileList){
             if(image.getSize()>0){
@@ -71,6 +63,19 @@ public class PostImageLocalService implements PostImageService {
 
         return savePostImageDtoList;
 
+    }
+
+    private static void checkDeleteImage(PostDto postDto, List<String> deleteFileJsonList, List<PostImageDto> savePostImageDtoList) throws JsonProcessingException {
+        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
+            ObjectMapper objectMapper=new ObjectMapper();
+            String json= deleteFileJsonList.toString();
+            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
+
+            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
+
+            if(!deleteImageList.isEmpty()) deleteImageList.forEach(savePostImageDtoList::remove);
+
+        }
     }
 
 }
