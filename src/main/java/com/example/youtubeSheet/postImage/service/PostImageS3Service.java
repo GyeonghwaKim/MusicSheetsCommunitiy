@@ -6,6 +6,7 @@ import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.postImage.repository.PostImageRepository;
 import com.example.youtubeSheet.postImage.dto.PostImageDto;
 import com.example.youtubeSheet.postImage.entity.PostImage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -47,16 +48,7 @@ public class PostImageS3Service implements PostImageService {
 
         List<PostImageDto> savePostImageDtoList=postDto.getPostImageList();
 
-        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
-            ObjectMapper objectMapper=new ObjectMapper();
-            String json=deleteFileJsonList.toString();
-            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
-
-            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
-
-            if(!deleteImageList.isEmpty()) deleteImageList.forEach(postImageDto -> savePostImageDtoList.remove(postImageDto));
-
-        }
+        checkDeleteImage(postDto, deleteFileJsonList, savePostImageDtoList);
 
 
         for(MultipartFile image: multipartFileList){
@@ -69,10 +61,7 @@ public class PostImageS3Service implements PostImageService {
                 String storedImagePath="post/"+this.changeFileName(originalFileName);
                 String storedFileName="/s3Post/"+storedImagePath;
 
-                ObjectMetadata metadata=new ObjectMetadata();
-                metadata.setContentType(image.getContentType());
-                metadata.setContentLength(image.getSize());
-                s3Client.putObject(bucket,storedImagePath, image.getInputStream(), metadata);
+                this.putObjectToS3(image, storedImagePath);
 
                 PostImageDto postImageDto =new PostImageDto();
                 postImageDto.setOriginalFileName(originalFileName);
@@ -85,6 +74,27 @@ public class PostImageS3Service implements PostImageService {
         }
 
         return savePostImageDtoList;
+    }
+
+    private static void checkDeleteImage(PostDto postDto, List<String> deleteFileJsonList, List<PostImageDto> savePostImageDtoList) throws JsonProcessingException {
+
+        if(deleteFileJsonList !=null && !deleteFileJsonList.isEmpty()){
+            ObjectMapper objectMapper=new ObjectMapper();
+            String json= deleteFileJsonList.toString();
+            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
+
+            if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
+
+            if(!deleteImageList.isEmpty()) deleteImageList.forEach(savePostImageDtoList::remove);
+
+        }
+    }
+
+    private void putObjectToS3(MultipartFile image, String storedImagePath) throws IOException {
+        ObjectMetadata metadata=new ObjectMetadata();
+        metadata.setContentType(image.getContentType());
+        metadata.setContentLength(image.getSize());
+        s3Client.putObject(bucket, storedImagePath, image.getInputStream(), metadata);
     }
 
 
