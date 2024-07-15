@@ -2,16 +2,14 @@ package com.example.youtubeSheet.post.controller;
 
 
 import com.example.youtubeSheet.profileImage.service.ProfileImageService;
-import com.example.youtubeSheet.comment.CommentService;
+import com.example.youtubeSheet.comment.service.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.comment.dto.CommentForm;
-import com.example.youtubeSheet.post.PostService;
+import com.example.youtubeSheet.post.service.PostService;
 import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.post.dto.PostForm;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +25,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j

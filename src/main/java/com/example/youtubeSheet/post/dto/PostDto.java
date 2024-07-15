@@ -2,6 +2,7 @@ package com.example.youtubeSheet.post.dto;
 
 
 import com.example.youtubeSheet.comment.dto.CommentDto;
+import com.example.youtubeSheet.postImage.dto.PostImageDto;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
 import lombok.Getter;
 import lombok.Setter;

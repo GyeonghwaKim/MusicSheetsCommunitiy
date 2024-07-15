@@ -1,13 +1,11 @@
-package com.example.youtubeSheet.post;
+package com.example.youtubeSheet.postImage.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.example.youtubeSheet.PostImageService;
 import com.example.youtubeSheet.post.dto.PostDto;
-import com.example.youtubeSheet.post.dto.PostImageDto;
-import com.example.youtubeSheet.post.entitiy.Post;
-import com.example.youtubeSheet.post.entitiy.PostImage;
-import com.example.youtubeSheet.post.repository.PostImageRepository;
+import com.example.youtubeSheet.postImage.repository.PostImageRepository;
+import com.example.youtubeSheet.postImage.dto.PostImageDto;
+import com.example.youtubeSheet.postImage.entity.PostImage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +15,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 

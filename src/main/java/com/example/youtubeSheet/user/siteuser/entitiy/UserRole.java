@@ -1,4 +1,4 @@
-package com.example.youtubeSheet.user.siteuser;
+package com.example.youtubeSheet.user.siteuser.entitiy;
 
 
 import lombok.Getter;

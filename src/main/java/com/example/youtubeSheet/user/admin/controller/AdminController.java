@@ -2,9 +2,9 @@ package com.example.youtubeSheet.user.admin.controller;
 
 
 import com.example.youtubeSheet.profileImage.service.ProfileImageService;
-import com.example.youtubeSheet.comment.CommentService;
+import com.example.youtubeSheet.comment.service.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
-import com.example.youtubeSheet.post.PostService;
+import com.example.youtubeSheet.post.service.PostService;
 import com.example.youtubeSheet.post.dto.PostDto;;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
 import com.example.youtubeSheet.profileImage.dto.ProfileImageDto;

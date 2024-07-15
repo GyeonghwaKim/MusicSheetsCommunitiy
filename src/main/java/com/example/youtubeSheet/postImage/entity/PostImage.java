@@ -1,4 +1,4 @@
-package com.example.youtubeSheet.post.entitiy;
+package com.example.youtubeSheet.postImage.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

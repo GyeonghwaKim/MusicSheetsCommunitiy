@@ -1,7 +1,7 @@
 package com.example.youtubeSheet.user.siteuser.service;
 
 import com.example.youtubeSheet.user.siteuser.repository.UserRepository;
-import com.example.youtubeSheet.user.siteuser.UserRole;
+import com.example.youtubeSheet.user.siteuser.entitiy.UserRole;
 import com.example.youtubeSheet.user.siteuser.entitiy.SiteUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

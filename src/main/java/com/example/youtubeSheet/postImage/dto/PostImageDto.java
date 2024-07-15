@@ -1,4 +1,4 @@
-package com.example.youtubeSheet.post.dto;
+package com.example.youtubeSheet.postImage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

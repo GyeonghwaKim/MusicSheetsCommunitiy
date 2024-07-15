@@ -1,4 +1,4 @@
-package com.example.youtubeSheet.user.siteuser;
+package com.example.youtubeSheet.user.siteuser.controller;
 
 
 import com.example.youtubeSheet.profileImage.service.ProfileImageService;

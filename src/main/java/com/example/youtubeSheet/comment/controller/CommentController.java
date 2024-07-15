@@ -1,11 +1,12 @@
-package com.example.youtubeSheet.comment;
+package com.example.youtubeSheet.comment.controller;
 
 
+import com.example.youtubeSheet.comment.service.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.comment.dto.CommentForm;
 import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
-import com.example.youtubeSheet.post.PostService;
+import com.example.youtubeSheet.post.service.PostService;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

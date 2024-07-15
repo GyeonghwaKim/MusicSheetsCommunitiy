@@ -1,5 +1,6 @@
 package com.example.youtubeSheet.post.entitiy;
 
+import com.example.youtubeSheet.postImage.entity.PostImage;
 import com.example.youtubeSheet.user.siteuser.entitiy.SiteUser;
 import jakarta.persistence.*;
 import lombok.Getter;

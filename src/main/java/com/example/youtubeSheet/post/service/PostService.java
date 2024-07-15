@@ -1,8 +1,8 @@
-package com.example.youtubeSheet.post;
+package com.example.youtubeSheet.post.service;
 
 
-import com.example.youtubeSheet.PostImageService;
-import com.example.youtubeSheet.comment.CommentService;
+import com.example.youtubeSheet.postImage.service.PostImageService;
+import com.example.youtubeSheet.comment.service.CommentService;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.exception.DataNotFoundException;
 import com.example.youtubeSheet.post.dto.PostDto;

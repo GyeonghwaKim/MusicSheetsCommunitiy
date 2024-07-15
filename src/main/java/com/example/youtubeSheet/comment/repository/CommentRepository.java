@@ -1,4 +1,4 @@
-package com.example.youtubeSheet.comment;
+package com.example.youtubeSheet.comment.repository;
 
 
 import com.example.youtubeSheet.comment.entitiy.Comment;

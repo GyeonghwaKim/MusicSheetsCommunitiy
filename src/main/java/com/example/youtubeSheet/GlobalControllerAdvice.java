@@ -4,7 +4,7 @@ package com.example.youtubeSheet;
 import com.example.youtubeSheet.musicSheets.entitiy.MusicSheet;
 import com.example.youtubeSheet.musicSheets.dto.MusicSheetForm;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
-import com.example.youtubeSheet.musicSheets.MusicSheetService;
+import com.example.youtubeSheet.musicSheets.service.MusicSheetService;
 import com.example.youtubeSheet.user.siteuser.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ControllerAdvice;

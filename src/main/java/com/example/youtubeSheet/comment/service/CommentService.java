@@ -1,7 +1,8 @@
-package com.example.youtubeSheet.comment;
+package com.example.youtubeSheet.comment.service;
 
 
 import com.example.youtubeSheet.comment.entitiy.Comment;
+import com.example.youtubeSheet.comment.repository.CommentRepository;
 import com.example.youtubeSheet.exception.DataNotFoundException;
 import com.example.youtubeSheet.comment.dto.CommentDto;
 import com.example.youtubeSheet.user.siteuser.dto.SiteUserDto;
