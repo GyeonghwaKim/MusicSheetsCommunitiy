@@ -36,18 +36,18 @@ public class UserController {
     @GetMapping("/signup")
     @PreAuthorize("isAnonymous()")
     public String signupUser(SignupForm signupForm){
-        return "/siteuser/signupForm";
+        return "siteuser/signupForm";
     }
 
     @PostMapping("/signup")
     @PreAuthorize("isAnonymous()")
     public String signupUser(@Valid @ModelAttribute("signupForm") SignupForm signupForm, BindingResult bindingResult){
 
-        if(bindingResult.hasErrors()) return "/siteuser/signupForm";
+        if(bindingResult.hasErrors()) return "siteuser/signupForm";
 
         if(!signupForm.getPassword().equals(signupForm.getConfirmPassword())){
             bindingResult.rejectValue("confirmPassword","passwordInCorrect", "2개의 패스워드가 일치하지 않습니다.");
-            return "/siteuser/signupForm";
+            return "siteuser/signupForm";
         }
 
         try{
@@ -57,13 +57,13 @@ public class UserController {
 
             e.printStackTrace();
             bindingResult.reject("signupFailed","이미 등록된 사용자입니다");
-            return "/siteuser/signupForm";
+            return "siteuser/signupForm";
         }
 
         catch (Exception e){
             e.printStackTrace();
             bindingResult.rejectValue("signupFailed",e.getMessage());
-            return "/siteuser/signupForm";
+            return "siteuser/signupForm";
         }
 
 
@@ -72,7 +72,7 @@ public class UserController {
 
     @GetMapping("/login")
     public String login(){
-        return "/siteuser/loginForm";
+        return "siteuser/loginForm";
     }
 
 
@@ -89,7 +89,7 @@ public class UserController {
 
         model.addAttribute("profileForm",profileForm);
 
-        return "/siteuser/profile";
+        return "siteuser/profile";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -97,12 +97,12 @@ public class UserController {
     public String profile(@Valid @ModelAttribute("profileForm") ProfileForm profileForm, BindingResult bindingResult) throws IOException {
 
         if(bindingResult.hasErrors()){
-            return "/siteuser/profile";
+            return "siteuser/profile";
         }
 
         if(!profileForm.getConfirmPassword().equals(profileForm.getPassword())){
             bindingResult.rejectValue("confirmPassword","passwordInCorrect", "2개의 패스워드가 일치하지 않습니다.");
-            return "/siteuser/profile";
+            return "siteuser/profile";
         }
 
         try{
@@ -114,10 +114,10 @@ public class UserController {
 
             e.printStackTrace();
             bindingResult.reject("changeEmail","이미 등록된 이용자입니다");
-            return "/siteuser/profile";
+            return "siteuser/profile";
         }
 
-        return "/siteuser/profile";
+        return "siteuser/profile";
 
     }
 

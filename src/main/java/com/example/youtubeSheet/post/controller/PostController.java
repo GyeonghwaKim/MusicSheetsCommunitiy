@@ -46,7 +46,7 @@ public class PostController {
         setCommentList(paging);
 
         model.addAttribute("paging",paging);
-        return "/post/postList";
+        return "post/postList";
     }
 
     @GetMapping("/search")
@@ -57,7 +57,7 @@ public class PostController {
         setCommentList(paging);
 
         model.addAttribute("paging",paging);
-        return "/post/postList";
+        return "post/postList";
     }
 
     @GetMapping("/detail/{postId}")
@@ -69,7 +69,7 @@ public class PostController {
         model.addAttribute("post",postDto);
         model.addAttribute("commentList",commentDtoList);
         model.addAttribute("commentForm",new CommentForm());
-        return "/post/postDetail";
+        return "post/postDetail";
     }
 
 
@@ -78,7 +78,7 @@ public class PostController {
     public String createPost(Model model)
     {
         model.addAttribute("postForm",new PostForm());
-        return "/post/postForm";
+        return "post/postForm";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -86,7 +86,7 @@ public class PostController {
     public String createPost(@Valid @ModelAttribute("postForm") PostForm postForm, BindingResult bindingResult,
                              Principal principal) throws IOException {
 
-        if(bindingResult.hasErrors()) return "/post/postForm";
+        if(bindingResult.hasErrors()) return "post/postForm";
 
         SiteUserDto siteUserDto=this.userService.getUser(principal.getName());
         PostDto postDto=this.postService.create(postForm.getTitle(), postForm.getContent(),postForm.getMultipartFileList(),siteUserDto);
@@ -108,14 +108,14 @@ public class PostController {
         postForm.setContent(postDto.getContent());
         model.addAttribute("postForm",postForm);
 
-        return "/post/postForm";
+        return "post/postForm";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{postId}")
     public String modifyPost(@Valid @ModelAttribute("postForm")PostForm postForm,BindingResult bindingResult, @PathVariable(name = "postId") Long postId, Principal principal) throws IOException {
 
-        if(bindingResult.hasErrors()) return "/post/postForm";
+        if(bindingResult.hasErrors()) return "post/postForm";
 
         PostDto postDto=this.postService.getPost(postId);
 

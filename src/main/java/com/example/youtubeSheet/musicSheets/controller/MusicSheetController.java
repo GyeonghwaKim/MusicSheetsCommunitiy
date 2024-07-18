@@ -31,7 +31,7 @@ public class MusicSheetController {
     @GetMapping("/saveMusicSheets")
     public String saveMusicSheets(MusicSheetForm musicSheetForm)
     {
-        return "/musicSheets/saveForm";
+        return "musicSheets/saveForm";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -39,7 +39,7 @@ public class MusicSheetController {
     public String saveMusicSheets(@Valid @ModelAttribute("musicSheetForm") MusicSheetForm musicSheetForm,
                                   BindingResult bindingResult, Principal principal){
 
-        if(bindingResult.hasErrors()) return "/musicSheets/saveForm";
+        if(bindingResult.hasErrors()) return "musicSheets/saveForm";
 
         SiteUserDto siteUserDto=this.userService.getUser(principal.getName());
         this.musicSheetService.save(musicSheetForm.getTitle(), musicSheetForm.getUrl(), siteUserDto);
@@ -56,7 +56,7 @@ public class MusicSheetController {
         model.addAttribute("url",musicSheetDto.getUrl());
         model.addAttribute("title",musicSheetDto.getTitle());
 
-        return "/musicSheets/youtube";
+        return "musicSheets/youtube";
     }
 
     @PreAuthorize("isAuthenticated()")

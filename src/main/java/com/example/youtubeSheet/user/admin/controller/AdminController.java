@@ -44,7 +44,7 @@ public class AdminController {
         Long commentCount=this.commentService.getTotalCountComments();
         model.addAttribute("commentCount",commentCount);
 
-        return"/admin/dashBoard";
+        return"admin/dashBoard";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -57,7 +57,7 @@ public class AdminController {
         ));
 
         model.addAttribute("paging",paging);
-        return "/admin/post";
+        return "admin/post";
 
     }
 
@@ -70,7 +70,7 @@ public class AdminController {
 
         model.addAttribute("paging",paging);
 
-        return "/admin/post";
+        return "admin/post";
     }
 
 
@@ -84,7 +84,7 @@ public class AdminController {
 
        model.addAttribute("paging",paging);
 
-        return "/admin/comment";
+        return "admin/comment";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -95,7 +95,7 @@ public class AdminController {
         Page<CommentDto> paging=this.commentService.searchPagedComments(page,keyword);
 
         model.addAttribute("paging",paging);
-        return "/admin/comment";
+        return "admin/comment";
     }
 
 
@@ -113,7 +113,7 @@ public class AdminController {
         model.addAttribute("paging",paging);
         model.addAttribute("account",new SiteUserDto());
 
-        return "/admin/account";
+        return "admin/account";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -128,7 +128,7 @@ public class AdminController {
         });
 
         model.addAttribute("paging",paging);
-        return "/admin/account";
+        return "admin/account";
     }
 
     @PreAuthorize("hasRole('ADMIN')")

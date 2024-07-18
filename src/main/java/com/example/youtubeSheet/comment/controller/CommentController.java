@@ -41,7 +41,7 @@ public class CommentController {
 
         if(bindingResult.hasErrors()){
             model.addAttribute("post",postDto);
-            return "/post/postDetail";
+            return "post/postDetail";
         }
 
         this.commentService.create(postDto.getId(),commentForm.getContent(),siteUserDto);
