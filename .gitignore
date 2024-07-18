@@ -39,5 +39,6 @@ out/
 application.properties
 application-private.properties
 /static/img
-application.yml
+
+application-secret.yml
 /src/test

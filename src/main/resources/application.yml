@@ -1,0 +1,66 @@
+spring:
+  profiles:
+    active: prod
+    group:
+      local: local, secret
+      prod: prod, secret
+
+  messages:
+    basename: messages,config.i18n.messages
+    encoding: UTF-8
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: ${h2DBUrl}
+    username: "sa"
+    password: ""
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8080
+  serverAddress: localhost
+
+serverName: localServer
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${prodDBUrl}
+    username: ${prodDBUsername}
+    password: ${prodDBPassword}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8080
+  serverAddress: 13.124.232.177
+
+serverName: prodServer
