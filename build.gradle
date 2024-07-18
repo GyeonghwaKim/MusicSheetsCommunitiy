@@ -32,9 +32,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
-	//JPA&mariaDB
+	//JPA&mysql
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
+	implementation 'mysql:mysql-connector-java:8.0.28'
 
     //bcrypt
 	implementation 'org.mindrot:jbcrypt:0.4'
