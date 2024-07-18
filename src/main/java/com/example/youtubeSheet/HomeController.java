@@ -26,6 +26,11 @@ public class HomeController {
         return "redirect:/post/list";    }
 
 
+    @GetMapping("/home")
+    public String home1(){
+        return "hi";
+    }
+
     @Value("${server.port}")
     private String port;
 
