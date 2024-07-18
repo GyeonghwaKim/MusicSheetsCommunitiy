@@ -103,13 +103,13 @@ public class PostService {
 
 
 
-    public PostDto modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList) throws IOException {
+    public PostDto modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteImageJsonList) throws IOException {
 
         postDto.setTitle(postForm.getTitle());
         postDto.setContent(postForm.getContent());
         postDto.setUpdateAt(LocalDateTime.now());
 
-        postDto.setPostImageList(this.postImageService.save(postDto,multipartFileList,deleteFileJsonList));
+        postDto.setPostImageList(this.postImageService.save(postDto,multipartFileList,deleteImageJsonList));
 
         Post modifyPost=this.postRepository.save(of(postDto));
 

@@ -56,7 +56,7 @@
             });
 
             let selectedFiles = [];
-            const maxSize = 3 * 1024 * 1024;
+            const maxSize = 1 * 1024 * 1024;
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
             function uploadFiles(postImageList) {
@@ -70,7 +70,7 @@
                 selectedFiles = [];
 
                 for (let i = 0; i < postImageList.length; i++) {
-//함수로 만들기
+
                     if (postImageList[i]) {
                         if (!allowedTypes.includes(postImageList[i].type)) {
                             alert("이미지 파일만 업로드 가능합니다. (jpg, png, gif)");
@@ -78,7 +78,7 @@
                             return;
                         }
                         if (postImageList[i].size > maxSize) {
-                            alert("파일 크기가 3MB를 초과합니다. 다른 파일을 선택해주세요.");
+                            alert("파일 크기가 1MB를 초과합니다. 다른 파일을 선택해주세요.");
                             document.getElementById('multipartFileList').value = '';
                             return;
                         }
@@ -132,10 +132,10 @@
                         imageDiv.remove();
                         event.preventDefault();
                         const deleteItem = document.createElement('input');
-                        deleteItem.setAttribute("name", "postImageJsonList");
+                        deleteItem.setAttribute("name", "postImageDeleteList");
 
-                        const postImageJson = JSON.stringify(postImageList[i]);
-                        deleteItem.setAttribute("value", postImageJson);
+                        const postImageDeleteJson = JSON.stringify(postImageList[i]);
+                        deleteItem.setAttribute("value", postImageDeleteJson);
                         deleteItem.setAttribute("type", "hidden");
                         fileList.appendChild(deleteItem);
                     });

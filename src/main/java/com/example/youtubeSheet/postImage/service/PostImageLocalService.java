@@ -35,11 +35,11 @@ public class PostImageLocalService implements PostImageService {
 
 
     @Override
-    public List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList,List<String> deleteFileJsonList) throws IOException{
+    public List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList,List<String> deleteImageJsonList) throws IOException{
 
         List<PostImageDto> savePostImageDtoList=postDto.getPostImageList();
 
-        checkDeleteImage(postDto, deleteFileJsonList, savePostImageDtoList);
+        checkDeleteImage(postDto, deleteImageJsonList, savePostImageDtoList);
 
         for(MultipartFile image: multipartFileList){
             if(image.getSize()>0){

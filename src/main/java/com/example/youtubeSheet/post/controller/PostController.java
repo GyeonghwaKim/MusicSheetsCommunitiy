@@ -121,7 +121,7 @@ public class PostController {
 
         deleteValidation(principal, postDto);
 
-        this.postService.modify(postDto,postForm,postForm.getMultipartFileList(),postForm.getPostImageJsonList());
+        this.postService.modify(postDto,postForm,postForm.getMultipartFileList(),postForm.getPostImageDeleteList());
 
         return "redirect:/post/detail/" + postId;
     }

@@ -117,7 +117,7 @@ public class UserController {
             return "/siteuser/profile";
         }
 
-        return "redirect:/";
+        return "/siteuser/profile";
 
     }
 
