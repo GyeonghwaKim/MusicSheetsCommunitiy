@@ -43,8 +43,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Set target IP
-
       - name: Docker compose
         uses: appleboy/ssh-action@master
         with:
