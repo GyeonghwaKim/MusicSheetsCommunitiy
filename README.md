@@ -9,11 +9,10 @@ Youtube에 업로드된 영상 악보를 저장 및 관리하고 공통 관심�
 ## 기능 소개
 
 ### Music Sheets 기능
-#### Show MusicSheets
-![musicSheets.png](readmeImg/musicSheets/musicSheets.png)
-
 #### save MusicSheets
 ![saveForm.png](readmeImg/musicSheets/saveForm.png)
+#### Show MusicSheets
+![musicSheets.png](readmeImg/musicSheets/musicSheets.png)
 #### Update & Delete MusicSheets
 ![modifyMusicSheets.png](readmeImg/musicSheets/modifyMusicSheets.png)
 
