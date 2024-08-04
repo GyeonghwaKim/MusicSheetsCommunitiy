@@ -1,16 +1,10 @@
 package com.example.youtubeSheet;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Map;
@@ -18,18 +12,7 @@ import java.util.TreeMap;
 
 @Slf4j
 @Controller
-public class HomeController {
-
-    @GetMapping("/")
-    public String home(){
-
-        return "redirect:/post/list";    }
-
-
-    @GetMapping("/home")
-    public String home1(){
-        return "hi";
-    }
+public class ServerController {
 
     @Value("${server.port}")
     private String port;
@@ -39,6 +22,12 @@ public class HomeController {
 
     @Value("${serverName}")
     private String serverName;
+
+    @GetMapping("/")
+    public String home(){
+
+        return "redirect:/post/list";    }
+
 
     @GetMapping("/serverCheck")
     public ResponseEntity<?> serverCheck(){
