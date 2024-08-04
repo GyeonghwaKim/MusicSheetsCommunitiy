@@ -2,11 +2,12 @@ package com.example.youtubeSheet.postImage.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.example.youtubeSheet.exception.DeserializationException;
+import com.example.youtubeSheet.exception.MultipartFileException;
 import com.example.youtubeSheet.post.dto.PostDto;
 import com.example.youtubeSheet.postImage.repository.PostImageRepository;
 import com.example.youtubeSheet.postImage.dto.PostImageDto;
 import com.example.youtubeSheet.postImage.entity.PostImage;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class PostImageS3Service implements PostImageService {
 
 
     @Override
-    public List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList,List<String> deleteFileJsonList) throws IOException {
+    public List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList,List<String> deleteFileJsonList){
 
         log.info("postImageService");
 
@@ -79,13 +80,18 @@ public class PostImageS3Service implements PostImageService {
         return savePostImageDtoList;
     }
 
-    private static void checkDeleteImage(PostDto postDto, List<String> deleteImageJsonList, List<PostImageDto> savePostImageDtoList) throws JsonProcessingException {
+    private static void checkDeleteImage(PostDto postDto, List<String> deleteImageJsonList, List<PostImageDto> savePostImageDtoList) {
 
         if(deleteImageJsonList !=null && !deleteImageJsonList.isEmpty()){
             ObjectMapper objectMapper=new ObjectMapper();
             String json= deleteImageJsonList.toString();
-            List<PostImageDto> deleteImageList=objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
+            List<PostImageDto> deleteImageList= null;
 
+            try {
+                deleteImageList = objectMapper.readValue(json, new TypeReference<List<PostImageDto>>(){});
+            } catch (IOException e) {
+                throw new DeserializationException("Failed to deserialization",e);
+            }
             if(postDto.getPostImageList().size() == deleteImageList.size()) postDto.setFileAttached(0);
 
             if(!deleteImageList.isEmpty()) deleteImageList.forEach(savePostImageDtoList::remove);
@@ -93,11 +99,15 @@ public class PostImageS3Service implements PostImageService {
         }
     }
 
-    private void putObjectToS3(MultipartFile image, String storedImagePath) throws IOException {
+    private void putObjectToS3(MultipartFile image, String storedImagePath){
         ObjectMetadata metadata=new ObjectMetadata();
         metadata.setContentType(image.getContentType());
         metadata.setContentLength(image.getSize());
-        s3Client.putObject(bucket, storedImagePath, image.getInputStream(), metadata);
+        try {
+            s3Client.putObject(bucket, storedImagePath, image.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new MultipartFileException( "Failed to process multipart file",e);
+        }
     }
 
 

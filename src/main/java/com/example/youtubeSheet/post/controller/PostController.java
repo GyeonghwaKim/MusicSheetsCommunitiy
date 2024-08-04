@@ -84,7 +84,7 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public String createPost(@Valid @ModelAttribute("postForm") PostForm postForm, BindingResult bindingResult,
-                             Principal principal) throws IOException {
+                             Principal principal){
 
         if(bindingResult.hasErrors()) return "post/postForm";
 
@@ -113,7 +113,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{postId}")
-    public String modifyPost(@Valid @ModelAttribute("postForm")PostForm postForm,BindingResult bindingResult, @PathVariable(name = "postId") Long postId, Principal principal) throws IOException {
+    public String modifyPost(@Valid @ModelAttribute("postForm")PostForm postForm,BindingResult bindingResult, @PathVariable(name = "postId") Long postId, Principal principal) {
 
         if(bindingResult.hasErrors()) return "post/postForm";
 

@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface PostImageService {
 
-    List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList) throws IOException;
+    List<PostImageDto> save(PostDto postDto, List<MultipartFile> multipartFileList, List<String> deleteFileJsonList);
 
 }

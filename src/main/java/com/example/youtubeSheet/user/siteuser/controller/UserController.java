@@ -94,7 +94,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/profile")
-    public String profile(@Valid @ModelAttribute("profileForm") ProfileForm profileForm, BindingResult bindingResult) throws IOException {
+    public String profile(@Valid @ModelAttribute("profileForm") ProfileForm profileForm, BindingResult bindingResult){
 
         if(bindingResult.hasErrors()){
             return "siteuser/profile";
@@ -111,7 +111,6 @@ public class UserController {
             this.userService.changePassword(profileForm.getUsername(),profileForm.getPassword());
 
         }catch (DataIntegrityViolationException e){
-
             e.printStackTrace();
             bindingResult.reject("changeEmail","이미 등록된 이용자입니다");
             return "siteuser/profile";
@@ -125,7 +124,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated")
     @PostMapping("/profileImage")
-    public String updateProfileImg(@RequestParam("multipartFile") MultipartFile multipartFile,Principal principal) throws IOException {
+    public String updateProfileImg(@RequestParam("multipartFile") MultipartFile multipartFile,Principal principal){
 
         SiteUserDto siteUserDto=this.userService.getUser(principal.getName());
 

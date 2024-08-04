@@ -86,7 +86,7 @@ public class PostService {
     }
 
 
-    public PostDto create(String title,String content,List<MultipartFile> multipartFileList, SiteUserDto siteUserDto) throws IOException {
+    public PostDto create(String title,String content,List<MultipartFile> multipartFileList, SiteUserDto siteUserDto){
 
         PostDto postDto=new PostDto();
         postDto.setTitle(title);
@@ -103,7 +103,7 @@ public class PostService {
 
 
 
-    public PostDto modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteImageJsonList) throws IOException {
+    public PostDto modify(PostDto postDto, PostForm postForm, List<MultipartFile> multipartFileList, List<String> deleteImageJsonList){
 
         postDto.setTitle(postForm.getTitle());
         postDto.setContent(postForm.getContent());

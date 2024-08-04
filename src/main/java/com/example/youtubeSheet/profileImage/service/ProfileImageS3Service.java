@@ -3,6 +3,7 @@ package com.example.youtubeSheet.profileImage.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.youtubeSheet.exception.DataNotFoundException;
+import com.example.youtubeSheet.exception.MultipartFileException;
 import com.example.youtubeSheet.profileImage.dto.ProfileImageDto;
 import com.example.youtubeSheet.profileImage.Entity.ProfileImage;
 import com.example.youtubeSheet.profileImage.repository.ProfileImageRepository;
@@ -41,8 +42,6 @@ public class ProfileImageS3Service implements ProfileImageService {
     }
 
 
-
-
     @Override
     public ProfileImageDto getProfileImage(Long profileImageId) {
         Optional<ProfileImage> optionalProfileImg =this.profileImageRepository.findById(profileImageId);
@@ -52,7 +51,7 @@ public class ProfileImageS3Service implements ProfileImageService {
     }
 
     @Override
-    public String uploadProfileImage(MultipartFile image,Long profileImageId) throws IOException {
+    public String uploadProfileImage(MultipartFile image,Long profileImageId){
 
         String originalImageName=image.getOriginalFilename();
         String storedImagePath ="profile/"+this.changeFileName(originalImageName);
@@ -93,11 +92,15 @@ public class ProfileImageS3Service implements ProfileImageService {
         return System.currentTimeMillis()+"_"+originalImageName;
     }
 
-    private void putObjectToS3(MultipartFile image, String storedImagePath) throws IOException {
+    private void putObjectToS3(MultipartFile image, String storedImagePath){
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(image.getContentType());
         metadata.setContentLength(image.getSize());
-        s3Client.putObject(bucket, storedImagePath, image.getInputStream(), metadata);
+        try {
+            s3Client.putObject(bucket, storedImagePath, image.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new MultipartFileException( "Failed to process multipart file",e);
+        }
     }
 
 

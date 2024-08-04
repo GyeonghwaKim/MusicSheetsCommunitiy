@@ -1,6 +1,7 @@
 package com.example.youtubeSheet.profileImage.service;
 
 import com.example.youtubeSheet.exception.DataNotFoundException;
+import com.example.youtubeSheet.exception.MultipartFileException;
 import com.example.youtubeSheet.profileImage.Entity.ProfileImage;
 import com.example.youtubeSheet.profileImage.repository.ProfileImageRepository;
 import com.example.youtubeSheet.profileImage.dto.ProfileImageDto;
@@ -42,16 +43,20 @@ public class ProfileImageLocalService implements ProfileImageService {
     }
 
     @Override
-    public String uploadProfileImage(MultipartFile image, Long profileImageId) throws IOException {
+    public String uploadProfileImage(MultipartFile image, Long profileImageId){
         String originalFileName=image.getOriginalFilename();
         String storedFileName="/localProfile/"+System.currentTimeMillis()+"_"+originalFileName;
         String savePath="C:/Users/Hwa/springbootImg/sheets"+storedFileName;
-        image.transferTo(new File(savePath));
+
+        try {
+            image.transferTo(new File(savePath));
+        } catch (IOException e) {
+            throw new MultipartFileException( "Failed to process multipart file",e);
+        }
 
         ProfileImageDto profileImageDto =this.getProfileImage(profileImageId);
         profileImageDto.setOriginalImgName(originalFileName);
         profileImageDto.setStoredImgName(storedFileName);
-
 
         this.profileImageRepository.save(of(profileImageDto));
 
